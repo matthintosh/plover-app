@@ -45,77 +45,120 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [periodontist, setPeriodontist] = useState<Periodontist | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userType, setUserType] = useState<'periodontist' | 'patient' | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        setUser(session?.user ?? null);
-        setIsAuthenticated(true);
-      }
-      if(event === 'SIGNED_OUT'){
-        setIsAuthenticated(false);
-        setUser(null);
-        setPeriodontist(null);
-        setPatient(null);
-        setUserType(null);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     const periodontistRepository = new PeriodontistRepository();
     const patientRepository = new PatientRepository();
-    if(!session){
-      setIsAuthenticated(false);
-      return;
-    }
-    async function getUserType(){
+    let active = true;
+
+    const clearProfiles = () => {
+      if (!active) {
+        return;
+      }
+      setPeriodontist(null);
+      setPatient(null);
+      setUserType(null);
+    };
+
+    const resolveSession = async (nextSession: Session | null) => {
+      if (!active) {
+        return;
+      }
+
+      setIsLoading(true);
+
+      const nextUser = nextSession?.user ?? null;
+      setUser(nextUser);
+
+      if (!nextUser) {
+        clearProfiles();
+        setIsLoading(false);
+        return;
+      }
+
+      let resolvedUserType: 'periodontist' | 'patient' | null = null;
+
       try {
-        const periodontist = await periodontistRepository.findByEmail(session!.user!.email!);
-        setPeriodontist(periodontist ?? null);
-        if(periodontist){
+        const email = nextUser.email?.toLowerCase() ?? null;
+
+        if (!email) {
+          clearProfiles();
           return;
         }
-        const patient = await patientRepository.findByEmail(session!.user!.email!);
-        setPatient(patient ?? null);
-      } catch (error) {
-        console.error('[AuthProvider] Error getting user type', error);
-        setIsLoading(false);
-        setUserType(null);
-      }
-      finally {
-        setIsLoading(false);
-      }
-    }
-    getUserType();
-  }, [session]);
 
-  useEffect(() => {
-    if(patient){
-     setIsAuthenticated(true);
-     setUserType("patient")
-     setIsLoading(false);
-    }
-    if(periodontist){
-      setIsAuthenticated(true);
-      setUserType("periodontist")
-      setIsLoading(false);
-    }
-  }, [patient, periodontist]);
+        const periodontistProfile = await periodontistRepository.findByEmail(email);
+
+        if (!active) {
+          return;
+        }
+
+        if (periodontistProfile) {
+          setPeriodontist({
+            id: periodontistProfile.id,
+            email: periodontistProfile.email,
+            fullName: periodontistProfile.fullName,
+            professionalCredentials: periodontistProfile.professionalCredentials,
+            accountStatus: periodontistProfile.accountStatus,
+          });
+          setPatient(null);
+          resolvedUserType = 'periodontist';
+        } else {
+          setPeriodontist(null);
+
+          const patientProfile = await patientRepository.findByEmail(email);
+
+          if (!active) {
+            return;
+          }
+
+          if (patientProfile) {
+            setPatient({
+              id: patientProfile.id,
+              email: patientProfile.email,
+              periodontistId: patientProfile.periodontistId,
+              onboardingCompleted: patientProfile.onboardingCompleted,
+              accountStatus: patientProfile.accountStatus,
+            });
+            resolvedUserType = 'patient';
+          } else {
+            setPatient(null);
+          }
+        }
+      } catch (error) {
+        console.warn('[AuthProvider] Failed to resolve user profile', error);
+        clearProfiles();
+      } finally {
+        if (active) {
+          setUserType(resolvedUserType);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      void resolveSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void resolveSession(session);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const isAuthenticated = Boolean(user && userType);
 
   const logout = async (): Promise<void> => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.warn('[AuthProvider] Sign out error', error);
     }
-    setIsAuthenticated(false);
     setUser(null);
     setPeriodontist(null);
     setPatient(null);

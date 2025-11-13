@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Spacing } from '@/constants/theme';
+import { Input } from '@/components/ui/Input';
+import { Colors, Spacing } from '@/constants/theme';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export type RegistrationFormValues = {
   fullName: string;
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   errorText: {
-    color: '#E57373',
-    fontSize: 14,
+    color: Colors.error,
+    textAlign: 'center',
   },
 });

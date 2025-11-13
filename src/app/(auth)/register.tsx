@@ -1,3 +1,4 @@
+import { LinearBackground } from '@/components/ui/LinearBackground';
 import { Spacing } from '@/constants/theme';
 import { RegistrationForm } from '@/features/authentication/components/RegistrationForm';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
@@ -55,6 +56,7 @@ export default function RegisterScreen() {
   }
 
   return (
+    <LinearBackground>
     <View style={styles.container}>
       <Text style={styles.title}>Create your practice account</Text>
       <Text style={styles.subtitle}>Invite patients and monitor their care in one place.</Text>
@@ -67,6 +69,7 @@ export default function RegisterScreen() {
         Already have an account? <Link href={{ pathname: '/(auth)/login' } as any}>Sign in</Link>
       </Text>
     </View>
+    </LinearBackground>
   );
 }
 

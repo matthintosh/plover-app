@@ -1,3 +1,4 @@
+import { LinearBackground } from '@/components/ui/LinearBackground';
 import { Spacing } from '@/constants/theme';
 import { LoginForm } from '@/features/authentication/components/LoginForm';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
@@ -57,6 +58,7 @@ export default function LoginScreen() {
   }
 
   return (
+    <LinearBackground>
     <View style={styles.container}>
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>Sign in to manage your patients and invitations.</Text>
@@ -67,6 +69,7 @@ export default function LoginScreen() {
         Need an account? <Link href={{ pathname: '/(auth)/register' } as any}>Register</Link>
       </Text>
     </View>
+    </LinearBackground>
   );
 }
 

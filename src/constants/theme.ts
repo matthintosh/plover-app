@@ -9,7 +9,7 @@
 import { Platform } from 'react-native';
 
 // Primary brand colors (calm, wellness-oriented)
-const primaryLight = '#4A90A4'; // Soft teal-blue
+const primaryLight = '#8A7DFF'; // Soft teal-blue
 const primaryDark = '#6BB3C7'; // Lighter teal for dark mode
 
 export const Colors = {

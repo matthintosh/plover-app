@@ -1,17 +1,26 @@
+import { useRouter } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
 import { Spacing } from '@/constants/theme';
 import { PatientInvitationForm } from '@/features/authentication/components/PatientInvitationForm';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
 import { AuthService } from '@/features/authentication/service/auth.service';
+import { PatientList } from '@/features/periodontist-dashboard/components/PatientList';
+import { usePeriodontistDashboard } from '@/features/periodontist-dashboard/hooks/usePeriodontistDashboard';
 import { normalizeError } from '@/lib/utils/error-handling';
-import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function PeriodontistDashboard() {
   const auth = useAuth();
+  const router = useRouter();
   const authService = useMemo(() => new AuthService(), []);
   const [invitationLoading, setInvitationLoading] = useState(false);
   const [invitationError, setInvitationError] = useState<string | null>(null);
   const [invitationSuccess, setInvitationSuccess] = useState<string | null>(null);
+  const {
+    patients,
+    isLoadingPatients,
+  } = usePeriodontistDashboard({ periodontistId: auth.periodontist?.id });
 
   const handleInvite = useCallback(
     async ({ email }: { email: string }) => {
@@ -41,6 +50,13 @@ export default function PeriodontistDashboard() {
     [auth, authService],
   );
 
+  const handleSelectPatient = useCallback(
+    (patientId: string) => {
+      router.push({ pathname: '/(periodontist)/patient/[id]', params: { id: patientId } } as any);
+    },
+    [router],
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -65,6 +81,23 @@ export default function PeriodontistDashboard() {
         />
 
         {invitationSuccess ? <Text style={styles.successText}>{invitationSuccess}</Text> : null}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Your Patients</Text>
+        <Text style={styles.sectionDescription}>
+          Select a patient to view or update their diagnosis and risk factors.
+        </Text>
+
+        {isLoadingPatients ? (
+          <Text>Loading patients…</Text>
+        ) : (
+          <PatientList
+            patients={patients}
+            selectedPatientId={null}
+            onSelectPatient={handleSelectPatient}
+          />
+        )}
       </View>
     </ScrollView>
   );

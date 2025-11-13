@@ -1,16 +1,14 @@
+import { BorderRadius, Colors, Spacing } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
   ActivityIndicator,
-  type TouchableOpacityProps,
+  Text,
+  TouchableOpacity,
   type TextStyle,
-  type ViewStyle,
+  type TouchableOpacityProps,
+  type ViewStyle
 } from 'react-native';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { Colors } from '@/constants/theme';
-import { Spacing, BorderRadius } from '@/constants/theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -44,7 +42,7 @@ export function Button({
 
   const getButtonStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {
-      borderRadius: BorderRadius.md,
+      borderRadius: BorderRadius.full,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',

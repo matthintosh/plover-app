@@ -1,16 +1,15 @@
+import { BorderRadius, Colors, Spacing } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import React, { useState } from 'react';
 import {
+  StyleSheet,
+  Text,
   TextInput,
   View,
-  Text,
-  StyleSheet,
   type TextInputProps,
-  type ViewStyle,
   type TextStyle,
+  type ViewStyle,
 } from 'react-native';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { Colors } from '@/constants/theme';
-import { Spacing, BorderRadius } from '@/constants/theme';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     fontSize: 16,

@@ -118,29 +118,29 @@
 
 ### Tests for User Story 2
 
-- [ ] T062 [P] [US2] Unit test for DiagnosisRepository in src/features/follow-up/repository/__tests__/diagnosis.repository.test.ts
-- [ ] T063 [P] [US2] Unit test for RiskFactorRepository in src/features/follow-up/repository/__tests__/risk-factor.repository.test.ts
-- [ ] T064 [P] [US2] Unit test for FollowUpService in src/features/follow-up/service/__tests__/follow-up.service.test.ts
-- [ ] T065 [P] [US2] Integration test for patient diagnosis display flow in src/features/follow-up/__tests__/integration/diagnosis-display.test.ts
-- [ ] T066 [P] [US2] Component test for DiagnosisDisplay in src/features/follow-up/components/__tests__/DiagnosisDisplay.test.tsx
-- [ ] T067 [P] [US2] Component test for RiskFactorsDisplay in src/features/follow-up/components/__tests__/RiskFactorsDisplay.test.tsx
+- [x] T062 [P] [US2] Unit test for DiagnosisRepository in src/features/follow-up/repository/__tests__/diagnosis.repository.test.ts
+- [x] T063 [P] [US2] Unit test for RiskFactorRepository in src/features/follow-up/repository/__tests__/risk-factor.repository.test.ts
+- [x] T064 [P] [US2] Unit test for FollowUpService in src/features/follow-up/service/__tests__/follow-up.service.test.ts
+- [x] T065 [P] [US2] Integration test for patient diagnosis display flow in src/features/follow-up/__tests__/integration/diagnosis-display.test.ts
+- [x] T066 [P] [US2] Component test for DiagnosisDisplay in src/features/follow-up/components/__tests__/DiagnosisDisplay.test.tsx
+- [x] T067 [P] [US2] Component test for RiskFactorsDisplay in src/features/follow-up/components/__tests__/RiskFactorsDisplay.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T068 [P] [US2] Create DiagnosisRepository interface in src/features/follow-up/repository/diagnosis.repository.interface.ts
-- [ ] T069 [P] [US2] Create DiagnosisRepository implementation in src/features/follow-up/repository/diagnosis.repository.ts
-- [ ] T070 [P] [US2] Create RiskFactorRepository interface in src/features/follow-up/repository/risk-factor.repository.interface.ts
-- [ ] T071 [P] [US2] Create RiskFactorRepository implementation in src/features/follow-up/repository/risk-factor.repository.ts
-- [ ] T072 [US2] Create FollowUpService with getDiagnosisByPatientId method in src/features/follow-up/service/follow-up.service.ts
-- [ ] T073 [US2] Create FollowUpService getRiskFactorsByPatientId method in src/features/follow-up/service/follow-up.service.ts
-- [ ] T074 [US2] Create follow-up types in src/features/follow-up/service/types.ts
-- [ ] T075 [US2] Create useFollowUp hook in src/features/follow-up/hooks/useFollowUp.ts
-- [ ] T076 [US2] Create DiagnosisDisplay component in src/features/follow-up/components/DiagnosisDisplay.tsx
-- [ ] T077 [US2] Create RiskFactorsDisplay component in src/features/follow-up/components/RiskFactorsDisplay.tsx
-- [ ] T078 [US2] Create patient initial access page in src/app/(tabs)/initial-access.tsx
-- [ ] T079 [US2] Display diagnosis and risk factors on initial access page
-- [ ] T080 [US2] Add error handling for expired/invalid magic links
-- [ ] T081 [US2] Add loading states for diagnosis data fetching
+- [x] T068 [P] [US2] Create DiagnosisRepository interface in src/features/follow-up/repository/diagnosis.repository.interface.ts
+- [x] T069 [P] [US2] Create DiagnosisRepository implementation in src/features/follow-up/repository/diagnosis.repository.ts
+- [x] T070 [P] [US2] Create RiskFactorRepository interface in src/features/follow-up/repository/risk-factor.repository.interface.ts
+- [x] T071 [P] [US2] Create RiskFactorRepository implementation in src/features/follow-up/repository/risk-factor.repository.ts
+- [x] T072 [US2] Create FollowUpService with getDiagnosisByPatientId method in src/features/follow-up/service/follow-up.service.ts
+- [x] T073 [US2] Create FollowUpService getRiskFactorsByPatientId method in src/features/follow-up/service/follow-up.service.ts
+- [x] T074 [US2] Create follow-up types in src/features/follow-up/service/types.ts
+- [x] T075 [US2] Create useFollowUp hook in src/features/follow-up/hooks/useFollowUp.ts
+- [x] T076 [US2] Create DiagnosisDisplay component in src/features/follow-up/components/DiagnosisDisplay.tsx
+- [x] T077 [US2] Create RiskFactorsDisplay component in src/features/follow-up/components/RiskFactorsDisplay.tsx
+- [x] T078 [US2] Create patient initial access page in src/app/(tabs)/initial-access.tsx
+- [x] T079 [US2] Display diagnosis and risk factors on initial access page
+- [x] T080 [US2] Add error handling for expired/invalid magic links
+- [x] T081 [US2] Add loading states for diagnosis data fetching
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -154,28 +154,28 @@
 
 ### Tests for User Story 3
 
-- [ ] T082 [P] [US3] Unit test for PeriodontistDashboardService in src/features/periodontist-dashboard/service/__tests__/periodontist-dashboard.service.test.ts
-- [ ] T083 [P] [US3] Integration test for diagnosis entry flow in src/features/periodontist-dashboard/__tests__/integration/diagnosis-entry.test.ts
-- [ ] T084 [P] [US3] Integration test for risk factor entry flow in src/features/periodontist-dashboard/__tests__/integration/risk-factor-entry.test.ts
-- [ ] T085 [P] [US3] Component test for DiagnosisForm in src/features/periodontist-dashboard/components/__tests__/DiagnosisForm.test.tsx
-- [ ] T086 [P] [US3] Component test for RiskFactorForm in src/features/periodontist-dashboard/components/__tests__/RiskFactorForm.test.tsx
+- [x] T082 [P] [US3] Unit test for PeriodontistDashboardService in src/features/periodontist-dashboard/service/__tests__/periodontist-dashboard.service.test.ts
+- [x] T083 [P] [US3] Integration test for diagnosis entry flow in src/features/periodontist-dashboard/__tests__/integration/diagnosis-entry.test.ts
+- [x] T084 [P] [US3] Integration test for risk factor entry flow in src/features/periodontist-dashboard/__tests__/integration/risk-factor-entry.test.ts
+- [x] T085 [P] [US3] Component test for DiagnosisForm in src/features/periodontist-dashboard/components/__tests__/DiagnosisForm.test.tsx
+- [x] T086 [P] [US3] Component test for RiskFactorForm in src/features/periodontist-dashboard/components/__tests__/RiskFactorForm.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T087 [US3] Create PeriodontistDashboardService with createOrUpdateDiagnosis method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
-- [ ] T088 [US3] Create PeriodontistDashboardService addRiskFactor method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
-- [ ] T089 [US3] Create PeriodontistDashboardService removeRiskFactor method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
-- [ ] T090 [US3] Create periodontist dashboard types in src/features/periodontist-dashboard/service/types.ts
-- [ ] T091 [US3] Create usePeriodontistDashboard hook in src/features/periodontist-dashboard/hooks/usePeriodontistDashboard.ts
-- [ ] T092 [US3] Create DiagnosisForm component in src/features/periodontist-dashboard/components/DiagnosisForm.tsx
-- [ ] T093 [US3] Create RiskFactorForm component in src/features/periodontist-dashboard/components/RiskFactorForm.tsx
-- [ ] T094 [US3] Create PatientList component in src/features/periodontist-dashboard/components/PatientList.tsx
-- [ ] T095 [US3] Create patient detail page in src/app/(periodontist)/patient/[id].tsx
-- [ ] T096 [US3] Add diagnosis entry form to patient detail page
-- [ ] T097 [US3] Add risk factor management to patient detail page
-- [ ] T098 [US3] Add validation for diagnosis (grade/stage required for periodontitis)
-- [ ] T099 [US3] Add validation for risk factors (tobacco use level)
-- [ ] T100 [US3] Update periodontist dashboard to show patient list
+- [x] T087 [US3] Create PeriodontistDashboardService with createOrUpdateDiagnosis method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
+- [x] T088 [US3] Create PeriodontistDashboardService addRiskFactor method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
+- [x] T089 [US3] Create PeriodontistDashboardService removeRiskFactor method in src/features/periodontist-dashboard/service/periodontist-dashboard.service.ts
+- [x] T090 [US3] Create periodontist dashboard types in src/features/periodontist-dashboard/service/types.ts
+- [x] T091 [US3] Create usePeriodontistDashboard hook in src/features/periodontist-dashboard/hooks/usePeriodontistDashboard.ts
+- [x] T092 [US3] Create DiagnosisForm component in src/features/periodontist-dashboard/components/DiagnosisForm.tsx
+- [x] T093 [US3] Create RiskFactorForm component in src/features/periodontist-dashboard/components/RiskFactorForm.tsx
+- [x] T094 [US3] Create PatientList component in src/features/periodontist-dashboard/components/PatientList.tsx
+- [x] T095 [US3] Create patient detail page in src/app/(periodontist)/patient/[id].tsx
+- [x] T096 [US3] Add diagnosis entry form to patient detail page
+- [x] T097 [US3] Add risk factor management to patient detail page
+- [x] T098 [US3] Add validation for diagnosis (grade/stage required for periodontitis)
+- [x] T099 [US3] Add validation for risk factors (tobacco use level)
+- [x] T100 [US3] Update periodontist dashboard to show patient list
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently
 

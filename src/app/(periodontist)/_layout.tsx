@@ -2,6 +2,7 @@ import { Redirect, Slot } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { LinearBackground } from '@/components/ui/LinearBackground';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
 
@@ -20,7 +21,9 @@ export default function PeriodontistProtectedLayout() {
     return <Redirect href={{ pathname: '/(auth)/login' }} />;
   }
 
-  return <Slot />;
+  return <LinearBackground>
+    <Slot />
+  </LinearBackground>;
 }
 
 const styles = StyleSheet.create({

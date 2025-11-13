@@ -1,0 +1,281 @@
+# Plover App Constitution
+
+## Core Principles
+
+### I. Feature-Based Architecture (MANDATORY)
+
+**Every feature MUST be organized in a feature-based folder structure with the following layers:**
+
+```
+src/features/[feature-name]/
+├── repository/          # Data access layer - abstracts data sources (API, local storage, cache)
+│   ├── [feature].repository.ts
+│   └── [feature].repository.interface.ts
+├── service/            # Business logic layer - contains use cases and domain logic
+│   ├── [feature].service.ts
+│   └── types.ts
+├── hooks/              # React hooks for feature-specific state management and side effects
+│   ├── use[Feature].ts
+│   └── use[Feature]Data.ts
+├── components/         # Feature-specific UI components
+│   ├── [Feature]Component.tsx
+│   └── [Feature]List.tsx
+└── pages/              # Feature pages/screens (Expo Router pages)
+    └── [feature].tsx
+```
+
+**Rules:**
+- Features must be self-contained with clear boundaries
+- Cross-feature dependencies must go through well-defined interfaces
+- Shared components go in `src/components/`, not within features
+- Each feature directory must include all layers (repository, service, hooks, components, pages)
+- Features communicate through services, never directly access other features' repositories
+
+### II. Code Quality Standards
+
+**Type Safety:**
+- TypeScript strict mode is mandatory
+- All functions, components, and data structures must have explicit types
+- Avoid `any` - use `unknown` with type guards when necessary
+- Define interfaces for all data models, API responses, and component props
+- Use discriminated unions for state management
+
+**Code Organization:**
+- Single Responsibility Principle: Each function/component does one thing well
+- DRY (Don't Repeat Yourself): Extract shared logic into utilities or hooks
+- KISS (Keep It Simple, Stupid): Prefer simple solutions over complex abstractions
+- Maximum function length: 50 lines (extract helpers if exceeded)
+- Maximum component length: 200 lines (split into smaller components)
+- Maximum file length: 300 lines (split into modules)
+
+**Naming Conventions:**
+- Components: PascalCase (e.g., `UserProfile`, `ProductCard`)
+- Functions/Variables: camelCase (e.g., `fetchUserData`, `isLoading`)
+- Constants: UPPER_SNAKE_CASE (e.g., `API_BASE_URL`, `MAX_RETRY_COUNT`)
+- Types/Interfaces: PascalCase with descriptive names (e.g., `UserProfile`, `ApiResponse<T>`)
+- Files: kebab-case for utilities, PascalCase for components (e.g., `user-utils.ts`, `UserProfile.tsx`)
+- Feature directories: kebab-case (e.g., `user-profile`, `product-catalog`)
+
+**Code Style:**
+- Use functional components with hooks exclusively
+- Prefer arrow functions for callbacks and event handlers
+- Use destructuring for props and state
+- Use optional chaining (`?.`) and nullish coalescing (`??`) appropriately
+- Format code with Prettier (enforced via ESLint)
+- Maximum nesting depth: 3 levels (extract functions if deeper)
+
+**Error Handling:**
+- All async operations must have error handling
+- Use try-catch blocks for error boundaries
+- Provide meaningful error messages to users
+- Log errors appropriately (never log sensitive data)
+- Use Result/Either patterns for operations that can fail
+
+### III. Testing Standards (NON-NEGOTIABLE)
+
+**Test Coverage Requirements:**
+- Minimum 80% code coverage for services and repositories
+- Minimum 70% code coverage for hooks
+- Minimum 60% code coverage for components
+- 100% coverage for critical business logic (authentication, payments, data validation)
+
+**Test Types:**
+1. **Unit Tests**: Test individual functions, services, and utilities in isolation
+   - Location: `src/features/[feature]/__tests__/`
+   - Naming: `[module].test.ts` or `[module].spec.ts`
+   - Mock external dependencies (API calls, storage, etc.)
+
+2. **Integration Tests**: Test feature workflows and service interactions
+   - Location: `src/features/[feature]/__tests__/integration/`
+   - Test complete user flows within a feature
+   - Use test databases/mocks for data access
+
+3. **Component Tests**: Test React components in isolation
+   - Use React Native Testing Library
+   - Test user interactions, rendering, and accessibility
+   - Location: `src/features/[feature]/components/__tests__/`
+
+4. **E2E Tests**: Test complete user journeys across features
+   - Use Detox or similar E2E framework
+   - Location: `e2e/`
+   - Cover critical user paths (onboarding, core workflows)
+
+**Testing Best Practices:**
+- Write tests BEFORE implementation (TDD when possible)
+- Tests must be independent and runnable in any order
+- Use descriptive test names: `describe('FeatureName', () => { it('should do X when Y', () => {}) })`
+- Arrange-Act-Assert pattern for test structure
+- Mock external dependencies (APIs, native modules, timers)
+- Test edge cases and error scenarios
+- Keep tests maintainable - if a test is hard to write, simplify the code
+
+**Test Quality Gates:**
+- All tests must pass before merging to main
+- No skipped tests without documented justification
+- Flaky tests must be fixed immediately
+- Test execution time: Unit tests < 5s, Integration tests < 30s per suite
+
+### IV. User Experience Consistency
+
+**Design System:**
+- Use a centralized theme system (`src/constants/theme.ts`)
+- All colors, typography, spacing, and shadows must come from the theme
+- Support light and dark modes consistently
+- Use semantic color names (e.g., `primary`, `error`, `success`) not literal colors (e.g., `blue500`)
+
+**Component Consistency:**
+- Reusable components must be in `src/components/` or `src/components/ui/`
+- Feature-specific components in feature directories
+- Components must be accessible (screen reader support, proper labels)
+- Consistent loading states, error states, and empty states
+- Standardized button styles, input styles, and form layouts
+
+**Navigation & Flow:**
+- Use Expo Router for all navigation
+- Consistent navigation patterns across features
+- Clear back navigation and breadcrumbs where appropriate
+- Loading indicators during async operations
+- Success/error feedback for user actions
+
+**Responsive Design:**
+- Support multiple screen sizes (phone, tablet)
+- Test on iOS and Android
+- Use responsive units and flexible layouts
+- Handle keyboard appearance gracefully
+- Safe area insets for notched devices
+
+**Performance Perception:**
+- Show loading states immediately (< 100ms)
+- Skeleton screens for content loading
+- Optimistic UI updates where appropriate
+- Smooth animations (60fps target)
+- No layout shifts during loading
+
+**Accessibility:**
+- All interactive elements must be accessible
+- Proper semantic HTML/React Native components
+- Screen reader labels for all images and icons
+- Minimum touch target size: 44x44 points
+- Sufficient color contrast (WCAG AA minimum)
+
+### V. Performance Requirements
+
+**Rendering Performance:**
+- Maintain 60 FPS during scrolling and animations
+- Use `React.memo()` for expensive components
+- Implement `useMemo()` and `useCallback()` for expensive computations
+- Virtualize long lists (FlatList with proper optimization props)
+- Avoid unnecessary re-renders (use React DevTools Profiler)
+
+**Bundle Size:**
+- Monitor bundle size with each release
+- Code split by route/feature where possible
+- Lazy load heavy dependencies
+- Tree-shake unused code
+- Maximum initial bundle size: 2MB (gzipped)
+
+**Network Performance:**
+- Implement request caching (React Query, SWR, or similar)
+- Debounce/throttle user input that triggers API calls
+- Paginate large data sets
+- Compress images and use appropriate formats (WebP when supported)
+- Maximum API response time: 2s (p95)
+- Implement offline support for critical features
+
+**Memory Management:**
+- Clean up subscriptions and timers in useEffect cleanup
+- Unmount unused components
+- Limit image cache size
+- Profile memory usage regularly
+- Maximum memory usage: 150MB on average devices
+
+**Startup Performance:**
+- App launch time: < 3s on average devices
+- Time to interactive: < 2s
+- Optimize splash screen and initial render
+- Lazy load non-critical features
+
+**Monitoring:**
+- Track performance metrics in production
+- Monitor crash rates (target: < 0.1%)
+- Track API response times and error rates
+- Monitor bundle size trends
+- Set up performance budgets and alerts
+
+## Architecture Patterns
+
+### Repository Pattern
+- **Purpose**: Abstract data access from business logic
+- **Implementation**: 
+  - Define interfaces in `repository/[feature].repository.interface.ts`
+  - Implement concrete repositories (API, LocalStorage, Cache)
+  - Services depend on repository interfaces, not implementations
+- **Benefits**: Easy to swap data sources, testable, clear separation of concerns
+
+### Service Layer Pattern
+- **Purpose**: Encapsulate business logic and use cases
+- **Implementation**:
+  - Services contain domain logic and orchestration
+  - Services use repositories for data access
+  - Services are pure functions when possible (easier to test)
+- **Benefits**: Reusable business logic, testable without UI, clear API
+
+### Custom Hooks Pattern
+- **Purpose**: Encapsulate stateful logic and side effects
+- **Implementation**:
+  - Hooks call services and manage component state
+  - Hooks handle loading, error, and success states
+  - Hooks expose clean APIs to components
+- **Benefits**: Reusable state logic, separation of concerns, testable
+
+## Quality Gates
+
+**Before Code Review:**
+- [ ] All tests pass locally
+- [ ] Code coverage meets minimum requirements
+- [ ] No linter errors or warnings
+- [ ] TypeScript compiles without errors
+- [ ] Manual testing on iOS and Android
+- [ ] Performance benchmarks met (if applicable)
+
+**Before Merge to Main:**
+- [ ] Code review approved by at least one team member
+- [ ] All CI/CD checks pass
+- [ ] Feature works on both iOS and Android
+- [ ] Accessibility requirements met
+- [ ] Performance requirements met
+- [ ] Documentation updated (if needed)
+
+**Before Release:**
+- [ ] E2E tests pass
+- [ ] Performance regression tests pass
+- [ ] Security review completed (if handling sensitive data)
+- [ ] Changelog updated
+- [ ] Version bumped appropriately
+
+## Governance
+
+**Constitution Compliance:**
+- This constitution supersedes all other coding guidelines
+- All code must comply with these principles
+- Violations require explicit justification and approval
+- Regular architecture reviews to ensure compliance
+
+**Amendments:**
+- Amendments require team discussion and consensus
+- Document rationale for any changes
+- Update this document with version history
+- Communicate changes to all team members
+
+**Enforcement:**
+- Automated checks via CI/CD where possible
+- Code review process validates compliance
+- Architecture decision records (ADRs) for exceptions
+- Regular team retrospectives on architecture
+
+---
+
+**Version**: 1.0.0  
+**Ratified**: 2025-01-27  
+**Last Amended**: 2025-01-27
+

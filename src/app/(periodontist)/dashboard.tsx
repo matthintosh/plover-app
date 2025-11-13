@@ -1,0 +1,112 @@
+import { Spacing } from '@/constants/theme';
+import { PatientInvitationForm } from '@/features/authentication/components/PatientInvitationForm';
+import { useAuth } from '@/features/authentication/hooks/useAuth';
+import { AuthService } from '@/features/authentication/service/auth.service';
+import { normalizeError } from '@/lib/utils/error-handling';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
+export default function PeriodontistDashboard() {
+  const auth = useAuth();
+  const authService = useMemo(() => new AuthService(), []);
+  const [invitationLoading, setInvitationLoading] = useState(false);
+  const [invitationError, setInvitationError] = useState<string | null>(null);
+  const [invitationSuccess, setInvitationSuccess] = useState<string | null>(null);
+
+  const handleInvite = useCallback(
+    async ({ email }: { email: string }) => {
+      if (!auth.periodontist) {
+        setInvitationError('You must be signed in as a periodontist to invite patients.');
+        return;
+      }
+
+      setInvitationLoading(true);
+      setInvitationError(null);
+      setInvitationSuccess(null);
+
+      try {
+        await authService.sendPatientInvitation({
+          periodontistId: auth.periodontist.id,
+          email,
+        });
+
+        setInvitationSuccess(`Invitation sent to ${email}.`);
+      } catch (err) {
+        const normalized = normalizeError(err);
+        setInvitationError(normalized.message);
+      } finally {
+        setInvitationLoading(false);
+      }
+    },
+    [auth, authService],
+  );
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Periodontist Dashboard</Text>
+        {auth.periodontist ? (
+          <Text style={styles.subtitle}>Welcome, {auth.periodontist.fullName}</Text>
+        ) : (
+          <Text style={styles.subtitle}>You are not signed in.</Text>
+        )}
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>Invite a patient</Text>
+        <Text style={styles.sectionDescription}>
+          Send a magic link invitation to onboard a new patient into your care program.
+        </Text>
+
+        <PatientInvitationForm
+          onSubmit={handleInvite}
+          loading={invitationLoading}
+          error={invitationError}
+        />
+
+        {invitationSuccess ? <Text style={styles.successText}>{invitationSuccess}</Text> : null}
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    padding: Spacing.lg,
+    gap: Spacing.lg,
+  },
+  header: {
+    gap: Spacing.sm,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '600',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+  },
+  card: {
+    padding: Spacing.lg,
+    borderRadius: 16,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    gap: Spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  sectionDescription: {
+    fontSize: 14,
+    color: '#555',
+  },
+  successText: {
+    color: '#2e7d32',
+    fontSize: 14,
+  },
+});

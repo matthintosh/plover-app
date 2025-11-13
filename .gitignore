@@ -41,3 +41,31 @@ app-example
 # generated native folders
 /ios
 /android
+
+# build outputs
+build/
+*.log
+*.log.*
+
+# coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# testing
+.jest/
+*.test.js.snap
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# Supabase
+.supabase/

@@ -59,9 +59,9 @@ export const Colors = {
     info: '#42A5F5',
     
     // Text colors
-    text: '#ECEDEE',
-    textSecondary: '#9BA1A6',
-    textDisabled: '#687076',
+    text: '#F5F5F7', // Brighter white for better contrast
+    textSecondary: '#AEAEB2', // Lighter gray for better readability
+    textDisabled: '#6E6E73',
     
     // Background colors
     background: '#151718',

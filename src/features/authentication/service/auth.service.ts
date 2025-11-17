@@ -1,20 +1,20 @@
 import { supabase } from '@/lib/supabase/client';
 import { AppError, ErrorCodes, normalizeError } from '@/lib/utils/error-handling';
 import {
-    PatientRepository,
+  PatientRepository,
 } from '../repository/patient.repository';
 import {
-    PeriodontistRepository,
+  PeriodontistRepository,
 } from '../repository/periodontist.repository';
 import type {
-    ExchangeMagicLinkCodeInput,
-    ExchangeMagicLinkCodeResult,
-    LoginPeriodontistInput,
-    LoginPeriodontistResult,
-    RegisterPeriodontistInput,
-    RegisterPeriodontistResult,
-    SendPatientInvitationInput,
-    SendPatientInvitationResult,
+  ExchangeMagicLinkCodeInput,
+  ExchangeMagicLinkCodeResult,
+  LoginPeriodontistInput,
+  LoginPeriodontistResult,
+  RegisterPeriodontistInput,
+  RegisterPeriodontistResult,
+  SendPatientInvitationInput,
+  SendPatientInvitationResult,
 } from './types';
 
 export class AuthService {
@@ -91,31 +91,35 @@ export class AuthService {
   ): Promise<SendPatientInvitationResult> {
     const { periodontistId, email } = input;
 
-    const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
-      data: { invited_by: periodontistId },
+    // Call Edge Function to invite patient (requires admin privileges)
+    const { data, error } = await supabase.functions.invoke('invite-patient', {
+      body: { email, periodontistId },
     });
 
-    if (error || !data?.user) {
+    if (error || !data) {
       throw new AppError(
         ErrorCodes.INVALID_INPUT,
-        error?.message ?? 'Unable to send invitation',
+        error?.message ?? data?.error ?? 'Unable to send invitation',
         error,
       );
     }
 
-    const patientProfile = await this.patientRepository.createPatientForPeriodontist({
-      id: data.user.id,
-      email,
-      periodontistId,
-    });
-
-    return patientProfile;
+    // Map the response to PatientProfile
+    return {
+      id: data.id,
+      email: data.email,
+      periodontistId: data.periodontistId,
+      onboardingCompleted: data.onboardingCompleted ?? false,
+      accountStatus: data.accountStatus ?? 'pending',
+      createdAt: data.createdAt ?? new Date().toISOString(),
+      updatedAt: data.updatedAt ?? new Date().toISOString(),
+    };
   }
 
   async exchangeMagicLinkCode(
     input: ExchangeMagicLinkCodeInput,
   ): Promise<ExchangeMagicLinkCodeResult> {
-    const { code, verifier: _verifier } = input;
+    const { code } = input;
 
     try {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);

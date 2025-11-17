@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "plover-app",
-    "slug": "plover-app",
+    "slug": "plover",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ee67e407-aab7-4d55-8f2a-98ba2ac7fb0e"
+      }
+    },
+    "owner": "matthintosh"
   }
 }

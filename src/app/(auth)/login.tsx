@@ -7,6 +7,7 @@ import { normalizeError } from '@/lib/utils/error-handling';
 import { Link, Redirect, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function LoginScreen() {
   const authService = useMemo(() => new AuthService(), []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
 
   const handleSubmit = useCallback(
     async (values: { email: string; password: string }) => {
@@ -61,11 +63,11 @@ export default function LoginScreen() {
     <LinearBackground>
     <View style={styles.container}>
       <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>Sign in to manage your patients and invitations.</Text>
+      <Text style={[styles.subtitle, { color: textSecondaryColor }]}>Sign in to manage your patients and invitations.</Text>
 
       <LoginForm onSubmit={handleSubmit} loading={loading} error={error} />
 
-      <Text style={styles.footerText}>
+      <Text style={[styles.footerText, { color: textSecondaryColor }]}>
         Need an account? <Link href={{ pathname: '/(auth)/register' } as any}>Register</Link>
       </Text>
     </View>
@@ -86,10 +88,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
   },
   footerText: {
     fontSize: 14,
-    color: '#555',
   },
 });

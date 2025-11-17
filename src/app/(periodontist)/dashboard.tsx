@@ -8,6 +8,7 @@ import { useAuth } from '@/features/authentication/hooks/useAuth';
 import { AuthService } from '@/features/authentication/service/auth.service';
 import { PatientList } from '@/features/periodontist-dashboard/components/PatientList';
 import { usePeriodontistDashboard } from '@/features/periodontist-dashboard/hooks/usePeriodontistDashboard';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { normalizeError } from '@/lib/utils/error-handling';
 
 export default function PeriodontistDashboard() {
@@ -20,7 +21,12 @@ export default function PeriodontistDashboard() {
   const {
     patients,
     isLoadingPatients,
+    refetchPatients
   } = usePeriodontistDashboard({ periodontistId: auth.periodontist?.id });
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
+  const successColor = useThemeColor({}, 'success');
+  const backgroundColor = useThemeColor({}, 'surface');
+  const textColor = useThemeColor({}, 'text');
 
   const handleInvite = useCallback(
     async ({ email }: { email: string }) => {
@@ -45,9 +51,10 @@ export default function PeriodontistDashboard() {
         setInvitationError(normalized.message);
       } finally {
         setInvitationLoading(false);
+        refetchPatients();
       }
     },
-    [auth, authService],
+    [auth, authService, refetchPatients],
   );
 
   const handleSelectPatient = useCallback(
@@ -62,15 +69,15 @@ export default function PeriodontistDashboard() {
       <View style={styles.header}>
         <Text style={styles.title}>Periodontist Dashboard</Text>
         {auth.periodontist ? (
-          <Text style={styles.subtitle}>Welcome, {auth.periodontist.fullName}</Text>
+          <Text style={[styles.subtitle, { color: textSecondaryColor }]}>Welcome, {auth.periodontist.fullName}</Text>
         ) : (
-          <Text style={styles.subtitle}>You are not signed in.</Text>
+          <Text style={[styles.subtitle, { color: textSecondaryColor }]}>You are not signed in.</Text>
         )}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Invite a patient</Text>
-        <Text style={styles.sectionDescription}>
+      <View style={[styles.card, { backgroundColor }]}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>Invite a patient</Text>
+        <Text style={[styles.sectionDescription, { color: textSecondaryColor }]}>
           Send a magic link invitation to onboard a new patient into your care program.
         </Text>
 
@@ -80,12 +87,12 @@ export default function PeriodontistDashboard() {
           error={invitationError}
         />
 
-        {invitationSuccess ? <Text style={styles.successText}>{invitationSuccess}</Text> : null}
+        {invitationSuccess ? <Text style={[styles.successText, { color: successColor }]}>{invitationSuccess}</Text> : null}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Your Patients</Text>
-        <Text style={styles.sectionDescription}>
+      <View style={[styles.card, { backgroundColor }]}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>Your Patients</Text>
+        <Text style={[styles.sectionDescription, { color: textSecondaryColor }]}>
           Select a patient to view or update their diagnosis and risk factors.
         </Text>
 
@@ -118,12 +125,10 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
   },
   card: {
     padding: Spacing.lg,
     borderRadius: 16,
-    backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 12,
@@ -136,10 +141,8 @@ const styles = StyleSheet.create({
   },
   sectionDescription: {
     fontSize: 14,
-    color: '#555',
   },
   successText: {
-    color: '#2e7d32',
     fontSize: 14,
   },
 });

@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-/* eslint-disable import/no-unresolved */
+ 
 
 import { Colors, Spacing } from '@/constants/theme';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
@@ -160,7 +160,6 @@ const styles = StyleSheet.create({
   container: {
     padding: Spacing.lg,
     gap: Spacing.lg,
-    backgroundColor: Colors.light.backgroundSecondary,
   },
   header: {
     gap: Spacing.xs,

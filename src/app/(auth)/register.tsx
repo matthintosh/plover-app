@@ -7,6 +7,7 @@ import { normalizeError } from '@/lib/utils/error-handling';
 import { Link, Redirect } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function RegisterScreen() {
   const authService = useMemo(() => new AuthService(), []);
@@ -14,6 +15,8 @@ export default function RegisterScreen() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { isAuthenticated, userType } = useAuth();
+  const textSecondaryColor = useThemeColor({}, 'textSecondary');
+  const successColor = useThemeColor({}, 'success');
 
   const handleSubmit = useCallback(
     async (values: {
@@ -59,13 +62,13 @@ export default function RegisterScreen() {
     <LinearBackground>
     <View style={styles.container}>
       <Text style={styles.title}>Create your practice account</Text>
-      <Text style={styles.subtitle}>Invite patients and monitor their care in one place.</Text>
+      <Text style={[styles.subtitle, { color: textSecondaryColor }]}>Invite patients and monitor their care in one place.</Text>
 
       <RegistrationForm onSubmit={handleSubmit} loading={loading} error={error} />
 
-      {successMessage ? <Text style={styles.successText}>{successMessage}</Text> : null}
+      {successMessage ? <Text style={[styles.successText, { color: successColor }]}>{successMessage}</Text> : null}
 
-      <Text style={styles.footerText}>
+      <Text style={[styles.footerText, { color: textSecondaryColor }]}>
         Already have an account? <Link href={{ pathname: '/(auth)/login' } as any}>Sign in</Link>
       </Text>
     </View>
@@ -86,14 +89,11 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
   },
   successText: {
-    color: '#2e7d32',
     fontSize: 14,
   },
   footerText: {
     fontSize: 14,
-    color: '#555',
   },
 });

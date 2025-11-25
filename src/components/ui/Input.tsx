@@ -60,6 +60,10 @@ export function Input({
           inputStyle,
         ]}
         placeholderTextColor={colors.textSecondary}
+        accessibilityLabel={props.accessibilityLabel || label}
+        accessibilityHint={props.accessibilityHint || helperText}
+        accessibilityRole="textbox"
+        accessibilityState={{ invalid: hasError }}
         onFocus={(e) => {
           setIsFocused(true);
           props.onFocus?.(e);

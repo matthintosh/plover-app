@@ -9,7 +9,9 @@ import { useAuth } from '@/features/authentication/hooks/useAuth';
 import type { PatientProfile } from '@/features/authentication/repository/patient.repository.interface';
 import { DiagnosisDisplay } from '@/features/follow-up/components/DiagnosisDisplay';
 import { RiskFactorsDisplay } from '@/features/follow-up/components/RiskFactorsDisplay';
+import { RecommendationForm } from '@/features/follow-up/components/RecommendationForm';
 import { useFollowUp } from '@/features/follow-up/hooks/useFollowUp';
+import { useRecommendation } from '@/features/follow-up/hooks/useRecommendation';
 import type { Diagnosis } from '@/features/follow-up/service/types';
 import { DiagnosisForm } from '@/features/periodontist-dashboard/components/DiagnosisForm';
 import { RiskFactorForm } from '@/features/periodontist-dashboard/components/RiskFactorForm';
@@ -45,6 +47,18 @@ export default function PatientDetailScreen() {
     error,
     refetch,
   } = useFollowUp({
+    patientId: patientId ?? undefined,
+    enabled: !!patientId,
+  });
+
+  const {
+    recommendation,
+    isLoading: recommendationLoading,
+    isFetching: recommendationFetching,
+    error: recommendationError,
+    createOrUpdateRecommendation,
+    isSubmitting: recommendationSubmitting,
+  } = useRecommendation({
     patientId: patientId ?? undefined,
     enabled: !!patientId,
   });
@@ -103,6 +117,21 @@ export default function PatientDetailScreen() {
     await refetch();
   };
 
+  const handleSaveRecommendation = async (values: {
+    toothbrushType?: string;
+    toothbrushBrand?: string;
+    toothbrushModel?: string;
+    odontogram?: {
+      spaces: Array<{
+        spaceId: string;
+        toolType: 'interdental_brush' | 'floss';
+        brushSize?: string;
+      }>;
+    };
+  }) => {
+    await createOrUpdateRecommendation(values, periodontist.id);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -152,6 +181,35 @@ export default function PatientDetailScreen() {
         onSubmit={handleAddRiskFactor}
         onRemove={handleRemoveRiskFactor}
       />
+
+      <View style={styles.card}>
+        <Text style={styles.sectionHeading}>Oral Hygiene Recommendations</Text>
+        {recommendation && (
+          <View style={styles.recommendationInfo}>
+            {recommendation.toothbrushType && (
+              <Text style={styles.infoText}>Type: {recommendation.toothbrushType}</Text>
+            )}
+            {recommendation.toothbrushBrand && (
+              <Text style={styles.infoText}>Brand: {recommendation.toothbrushBrand}</Text>
+            )}
+            {recommendation.toothbrushModel && (
+              <Text style={styles.infoText}>Model: {recommendation.toothbrushModel}</Text>
+            )}
+          </View>
+        )}
+      </View>
+
+      <RecommendationForm
+        initialValues={{
+          toothbrushType: recommendation?.toothbrushType,
+          toothbrushBrand: recommendation?.toothbrushBrand,
+          toothbrushModel: recommendation?.toothbrushModel,
+          odontogram: recommendation?.odontogram,
+        }}
+        loading={recommendationSubmitting}
+        error={recommendationError?.message ?? null}
+        onSubmit={handleSaveRecommendation}
+      />
     </ScrollView>
   );
 }
@@ -196,6 +254,14 @@ const styles = StyleSheet.create({
   centeredText: {
     fontSize: 14,
     color: Colors.light.textSecondary,
+  },
+  recommendationInfo: {
+    gap: Spacing.xs,
+    marginTop: Spacing.sm,
+  },
+  infoText: {
+    fontSize: 14,
+    color: Colors.light.text,
   },
 });
 

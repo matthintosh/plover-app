@@ -22,6 +22,8 @@ export interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export function Button({
@@ -33,6 +35,8 @@ export function Button({
   fullWidth = false,
   style,
   textStyle,
+  accessibilityLabel,
+  accessibilityHint,
   ...props
 }: ButtonProps) {
   const colorScheme = useThemeColor({}, 'background') === Colors.light.background ? 'light' : 'dark';
@@ -46,7 +50,7 @@ export function Button({
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
-      minHeight: 44, // Minimum touch target size per accessibility
+      minHeight: 32, // Minimum touch target size per accessibility
     };
 
     // Size styles
@@ -54,17 +58,17 @@ export function Button({
       sm: {
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.sm,
-        minHeight: 36,
+        minHeight: 24,
       },
       md: {
         paddingHorizontal: Spacing.lg,
         paddingVertical: Spacing.md,
-        minHeight: 44,
+        minHeight: 32,
       },
       lg: {
         paddingHorizontal: Spacing.xl,
         paddingVertical: Spacing.lg,
-        minHeight: 52,
+        minHeight: 40,
       },
     };
 
@@ -130,7 +134,9 @@ export function Button({
       disabled={isDisabled}
       activeOpacity={0.7}
       accessibilityRole="button"
-      accessibilityState={{ disabled: isDisabled }}
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       {...props}
     >
       {loading ? (

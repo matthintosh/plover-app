@@ -29,3 +29,26 @@ export type RiskFactor = {
   updatedAt: string;
 };
 
+export type OdontogramSpace = {
+  spaceId: string; // e.g., "1-2", "2-3"
+  toolType: 'interdental_brush' | 'floss';
+  brushSize?: string; // Required if toolType is 'interdental_brush'
+};
+
+export type Odontogram = {
+  id: string;
+  spaces: OdontogramSpace[];
+};
+
+export type OralHygieneRecommendation = {
+  id: string;
+  patientId: string;
+  toothbrushType?: string;
+  toothbrushBrand?: string;
+  toothbrushModel?: string;
+  odontogram?: Odontogram;
+  enteredBy: string; // Periodontist ID
+  enteredAt: string;
+  updatedAt: string;
+};
+

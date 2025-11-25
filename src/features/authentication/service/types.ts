@@ -24,6 +24,10 @@ export type ExchangeMagicLinkCodeInput = {
   verifier: string;
 };
 
+export type RequestPatientMagicLinkInput = {
+  email: string;
+};
+
 export type RegisterPeriodontistResult = PeriodontistProfile;
 export type LoginPeriodontistResult = {
   accessToken: string;
@@ -37,4 +41,29 @@ export type ExchangeMagicLinkCodeResult = {
   accessToken: string;
   refreshToken: string | null;
   userId: string;
+};
+export type RequestPatientMagicLinkResult = {
+  success: boolean;
+  message: string;
+};
+
+export type RequestPatientOTPInput = {
+  email: string;
+};
+
+export type RequestPatientOTPResult = {
+  success: boolean;
+  message: string;
+};
+
+export type VerifyPatientOTPInput = {
+  email: string;
+  token: string;
+};
+
+export type VerifyPatientOTPResult = {
+  accessToken: string;
+  refreshToken: string | null;
+  userId: string;
+  user: User;
 };

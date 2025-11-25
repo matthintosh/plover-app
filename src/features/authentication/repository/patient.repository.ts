@@ -54,4 +54,26 @@ export class PatientRepository implements PatientRepositoryPort {
 
     return mapPatientRowToProfile(data);
   }
+
+  async updateOnboardingStatus(patientId: string, completed: boolean): Promise<PatientProfile> {
+    const { data, error } = await supabase
+      .from('patient')
+      .update({
+        onboarding_completed: completed,
+        account_status: completed ? 'active' : 'pending',
+      })
+      .eq('id', patientId)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      throw new AppError(
+        ErrorCodes.NETWORK_ERROR,
+        error?.message ?? 'Failed to update patient onboarding status',
+        error,
+      );
+    }
+
+    return mapPatientRowToProfile(data);
+  }
 }

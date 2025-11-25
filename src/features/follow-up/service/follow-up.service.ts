@@ -2,12 +2,20 @@ import type { DiagnosisRepositoryPort } from '../repository/diagnosis.repository
 import { DiagnosisRepository } from '../repository/diagnosis.repository';
 import type { RiskFactorRepositoryPort } from '../repository/risk-factor.repository.interface';
 import { RiskFactorRepository } from '../repository/risk-factor.repository';
-import type { Diagnosis, RiskFactor } from './types';
+import type { RecommendationRepositoryPort } from '../repository/recommendation.repository.interface';
+import { RecommendationRepository } from '../repository/recommendation.repository';
+import type {
+  Diagnosis,
+  RiskFactor,
+  OralHygieneRecommendation,
+  OdontogramSpace,
+} from './types';
 
 export class FollowUpService {
   constructor(
     private readonly diagnosisRepository: DiagnosisRepositoryPort = new DiagnosisRepository(),
     private readonly riskFactorRepository: RiskFactorRepositoryPort = new RiskFactorRepository(),
+    private readonly recommendationRepository: RecommendationRepositoryPort = new RecommendationRepository(),
   ) {}
 
   async getDiagnosisByPatientId(patientId: string): Promise<Diagnosis | null> {
@@ -41,6 +49,31 @@ export class FollowUpService {
       enteredAt: riskFactor.enteredAt,
       updatedAt: riskFactor.updatedAt,
     }));
+  }
+
+  async getRecommendationByPatientId(
+    patientId: string,
+  ): Promise<OralHygieneRecommendation | null> {
+    return await this.recommendationRepository.getRecommendationByPatientId(patientId);
+  }
+
+  async createOrUpdateRecommendation(
+    patientId: string,
+    periodontistId: string,
+    data: {
+      toothbrushType?: string;
+      toothbrushBrand?: string;
+      toothbrushModel?: string;
+      odontogram?: {
+        spaces: OdontogramSpace[];
+      };
+    },
+  ): Promise<OralHygieneRecommendation> {
+    return await this.recommendationRepository.createOrUpdateRecommendation(
+      patientId,
+      periodontistId,
+      data,
+    );
   }
 }
 

@@ -22,6 +22,7 @@ export interface PatientRepositoryPort {
   createPatientForPeriodontist(input: CreatePatientInput): Promise<PatientProfile>;
   listByPeriodontistId(periodontistId: string): Promise<PatientProfile[]>;
   findByEmail(email: string): Promise<PatientProfile | null>;
+  updateOnboardingStatus(patientId: string, completed: boolean): Promise<PatientProfile>;
 }
 
 export const mapPatientRowToProfile = (row: PatientRow): PatientProfile => ({

@@ -13,6 +13,20 @@ jest.mock('../../../../lib/supabase/client', () => {
           inviteUserByEmail: jest.fn(),
         },
       },
+      functions: {
+        invoke: jest.fn().mockResolvedValue({
+          data: {
+            id: 'patient-1',
+            email: 'patient@example.com',
+            periodontistId: 'periodontist-1',
+            onboardingCompleted: false,
+            accountStatus: 'pending',
+            createdAt: 'now',
+            updatedAt: 'now',
+          },
+          error: null,
+        }),
+      },
     },
   };
 });
@@ -66,29 +80,37 @@ describe('Authentication Integration Flow', () => {
   });
 
   it('invites a patient and creates patient profile', async () => {
-    const inviteMock = mockedSupabase.auth.admin.inviteUserByEmail as jest.Mock;
-    inviteMock.mockResolvedValue({
-      data: { user: { id: 'patient-1', email: 'patient@example.com' } },
+    const invokeMock = mockedSupabase.functions.invoke as jest.Mock;
+    invokeMock.mockResolvedValue({
+      data: {
+        id: 'patient-1',
+        email: 'patient@example.com',
+        periodontistId: 'periodontist-1',
+        onboardingCompleted: false,
+        accountStatus: 'pending',
+        createdAt: 'now',
+        updatedAt: 'now',
+      },
       error: null,
     });
 
-    const createPatientMock = jest.fn().mockResolvedValue({ id: 'patient-1', email: 'patient@example.com' });
     MockedPatientRepo.mockImplementation(() => ({
-      createPatientForPeriodontist: createPatientMock,
+      createPatientForPeriodontist: jest.fn(),
       listByPeriodontistId: jest.fn(),
       findByEmail: jest.fn(),
+      updateOnboardingStatus: jest.fn(),
     } as any));
 
     const service = new AuthService(new PeriodontistRepository(), new PatientRepository());
 
-    await service.sendPatientInvitation({ periodontistId: 'periodontist-1', email: 'patient@example.com' });
+    const result = await service.sendPatientInvitation({ periodontistId: 'periodontist-1', email: 'patient@example.com' });
 
-    expect(inviteMock).toHaveBeenCalledWith('patient@example.com', {
-      data: { invited_by: 'periodontist-1' },
+    expect(invokeMock).toHaveBeenCalledWith('invite-patient', {
+      body: { email: 'patient@example.com', periodontistId: 'periodontist-1' },
     });
 
-    expect(createPatientMock).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'patient-1', periodontistId: 'periodontist-1' })
-    );
+    expect(result.id).toBe('patient-1');
+    expect(result.email).toBe('patient@example.com');
+    expect(result.periodontistId).toBe('periodontist-1');
   });
 });

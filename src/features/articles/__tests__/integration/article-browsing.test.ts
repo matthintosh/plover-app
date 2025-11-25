@@ -1,5 +1,5 @@
-import { ArticleService } from '../../service/article.service';
 import { ArticleRepository } from '../../repository/article.repository';
+import { ArticleService } from '../../service/article.service';
 
 jest.mock('../../../../lib/supabase/client', () => {
   return {

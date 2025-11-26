@@ -1,3 +1,4 @@
+import { Redirect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -7,21 +8,20 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Redirect } from 'expo-router';
 
+import { Card } from '@/components/ui/Card';
 import { Colors, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
 import { DiagnosisDisplay } from '@/features/follow-up/components/DiagnosisDisplay';
-import { RiskFactorsDisplay } from '@/features/follow-up/components/RiskFactorsDisplay';
 import { OdontogramDisplay } from '@/features/follow-up/components/OdontogramDisplay';
+import { RiskFactorsDisplay } from '@/features/follow-up/components/RiskFactorsDisplay';
 import { useFollowUp } from '@/features/follow-up/hooks/useFollowUp';
 import { useRecommendation } from '@/features/follow-up/hooks/useRecommendation';
-import { useStatistics } from '@/features/statistics/hooks/useStatistics';
-import { TrendsDisplay } from '@/features/statistics/components/TrendsDisplay';
-import { EmptyState } from '@/features/statistics/components/EmptyState';
 import { DateRangeSelector } from '@/features/statistics/components/DateRangeSelector';
-import { Card } from '@/components/ui/Card';
+import { EmptyState } from '@/features/statistics/components/EmptyState';
+import { TrendsDisplay } from '@/features/statistics/components/TrendsDisplay';
+import { useStatistics } from '@/features/statistics/hooks/useStatistics';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function InitialAccessScreen() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -115,7 +115,7 @@ export default function InitialAccessScreen() {
       }>
       <View style={styles.header}>
         <Text style={[styles.heading, { color: palette.text }]}>
-          Welcome{patient?.email ? `, ${patient.email}` : ''}
+          Welcome{patient?.fullName ? `, ${patient.fullName}` : patient?.email ? `, ${patient.email}` : ''}
         </Text>
         <Text style={[styles.subheading, { color: palette.textSecondary }]}>
           Here is the information your periodontist shared to help you get started.

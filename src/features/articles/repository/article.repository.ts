@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase/client';
 import { AppError, ErrorCodes } from '@/lib/utils/error-handling';
-import type { ArticleRepositoryPort } from './article.repository.interface';
 import type { Article } from '../service/types';
+import type { ArticleRepositoryPort } from './article.repository.interface';
 
 export class ArticleRepository implements ArticleRepositoryPort {
   async getPublishedArticles(limit?: number, offset?: number): Promise<Article[]> {
@@ -53,26 +53,32 @@ export class ArticleRepository implements ArticleRepositoryPort {
     return this.mapRowToArticle(data);
   }
 
-  private mapRowToArticle(row: {
-    id: string;
-    title: string;
-    content: string;
-    thumbnail_url: string | null;
-    category: string | null;
-    published_at: string | null;
-    created_at: string;
-    updated_at: string;
-    status: string;
-  }): Article {
+  private mapRowToArticle(row: Record<string, unknown>): Article {
+    // Convert Supabase Proxy object to plain object to avoid "Indexed property setter" errors
+    // Extract values explicitly to work around Supabase Proxy limitations
+    const id = String(row.id ?? '');
+    const title = String(row.title ?? '');
+    const content = String(row.content ?? '');
+    const thumbnail_url = row.thumbnail_url ? String(row.thumbnail_url) : null;
+    const category = row.category ? String(row.category) : null;
+    const published_at = row.published_at ? String(row.published_at) : null;
+    const created_at = String(row.created_at ?? '');
+    const updated_at = String(row.updated_at ?? '');
+
+    // Ensure publishedAt is always a string (required by Article type)
+    // For published articles, published_at should never be null due to DB constraint,
+    // but we fallback to created_at as a safety measure
+    const publishedAt = published_at ?? created_at;
+    
     return {
-      id: row.id,
-      title: row.title,
-      content: row.content,
-      thumbnailUrl: row.thumbnail_url || undefined,
-      category: row.category || undefined,
-      publishedAt: row.published_at || row.created_at,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      id,
+      title,
+      content,
+      thumbnailUrl: thumbnail_url || undefined,
+      category: category || undefined,
+      publishedAt,
+      createdAt: created_at,
+      updatedAt: updated_at,
     };
   }
 }

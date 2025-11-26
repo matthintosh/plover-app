@@ -14,7 +14,15 @@ export interface ArticleCardProps {
 export function ArticleCard({ article, onPress }: ArticleCardProps) {
   const colorScheme =
     useThemeColor({}, 'background') === Colors.light.background ? 'light' : 'dark';
-  const colors = Colors[colorScheme];
+  // Extract color values as plain strings to avoid Proxy issues in React Native Web
+  const colorPalette = Colors[colorScheme];
+  const colors = {
+    primary: String(colorPalette.primary),
+    text: String(colorPalette.text),
+    textSecondary: String(colorPalette.textSecondary),
+    surface: String(colorPalette.surface),
+    border: String(colorPalette.border),
+  };
 
   const handlePress = () => {
     if (onPress) {
@@ -22,10 +30,11 @@ export function ArticleCard({ article, onPress }: ArticleCardProps) {
     }
   };
 
+
   return (
     <Link href={`/(tabs)/articles/${article.id}`} asChild>
       <TouchableOpacity
-        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={styles.card}
         onPress={handlePress}
         activeOpacity={0.7}>
         {article.thumbnailUrl && (
@@ -54,9 +63,9 @@ export function ArticleCard({ article, onPress }: ArticleCardProps) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: Spacing.md,
-    borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.md,
+    backgroundColor: Colors.light.surface,
   },
   thumbnail: {
     width: '100%',

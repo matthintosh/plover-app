@@ -101,7 +101,7 @@ export default function HomeScreen() {
       contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <Text style={[styles.welcomeText, { color: palette.text }]}>
-          Welcome{patient?.email ? `, ${patient.email.split('@')[0]}` : ''}!
+          Welcome{patient?.fullName ? `, ${patient.fullName}` : patient?.email ? `, ${patient.email.split('@')[0]}` : ''}!
         </Text>
         <Text style={[styles.subtitleText, { color: palette.textSecondary }]}>
           Track your daily symptoms and habits.

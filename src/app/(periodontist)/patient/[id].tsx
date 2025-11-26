@@ -136,7 +136,7 @@ export default function PatientDetailScreen() {
         <Text style={styles.title}>Patient Details</Text>
         {patient ? (
           <>
-            <Text style={styles.subtitle}>{patient.email}</Text>
+            <Text style={styles.subtitle}>{patient.fullName || patient.email}</Text>
             <Text style={styles.subtitle}>Status: {patient.accountStatus}</Text>
           </>
         ) : (

@@ -29,6 +29,7 @@ export interface Periodontist {
 export interface Patient {
   id: string;
   email: string;
+  fullName: string | null;
   periodontistId: string;
   onboardingCompleted: boolean;
   accountStatus: 'pending' | 'active' | 'inactive';
@@ -116,6 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setPatient({
               id: patientProfile.id,
               email: patientProfile.email,
+              fullName: patientProfile.fullName,
               periodontistId: patientProfile.periodontistId,
               onboardingCompleted: patientProfile.onboardingCompleted,
               accountStatus: patientProfile.accountStatus,

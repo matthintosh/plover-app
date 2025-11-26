@@ -37,7 +37,7 @@ export const PatientList: React.FC<PatientListProps> = ({
             onPress={() => onSelectPatient(patient.id)}>
             <View style={styles.patientCopy}>
               <Text style={[styles.patientName, selected && styles.patientNameSelected]}>
-                {patient.email}
+                {patient.fullName || patient.email}
               </Text>
               <Text style={styles.patientMeta}>
                 Status: {patient.accountStatus.replace('_', ' ')}

@@ -14,7 +14,13 @@ const ARTICLES_PER_PAGE = 10;
 
 export default function ArticlesScreen() {
   const colorScheme = useColorScheme() ?? 'light';
-  const palette = Colors[colorScheme];
+  // Extract color values as plain strings to avoid Proxy issues in React Native Web
+  const colorPalette = Colors[colorScheme];
+  const palette = {
+    background: String(colorPalette.background),
+    text: String(colorPalette.text),
+    textSecondary: String(colorPalette.textSecondary),
+  };
   const { isAuthenticated, userType, isLoading: authLoading } = useAuth();
   const [offset, setOffset] = useState(0);
   const [allArticles, setAllArticles] = useState<Article[]>([]);

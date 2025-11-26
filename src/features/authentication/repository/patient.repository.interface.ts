@@ -5,6 +5,7 @@ type PatientRow = Tables<'patient'>;
 export type PatientProfile = {
   id: string;
   email: string;
+  fullName: string | null;
   periodontistId: string;
   onboardingCompleted: boolean;
   accountStatus: 'pending' | 'active' | 'inactive';
@@ -25,9 +26,10 @@ export interface PatientRepositoryPort {
   updateOnboardingStatus(patientId: string, completed: boolean): Promise<PatientProfile>;
 }
 
-export const mapPatientRowToProfile = (row: PatientRow): PatientProfile => ({
+export const mapPatientRowToProfile = (row: PatientRow & { full_name?: string | null }): PatientProfile => ({
   id: row.id,
   email: row.email,
+  fullName: row.full_name ?? null,
   periodontistId: row.periodontist_id,
   onboardingCompleted: row.onboarding_completed,
   accountStatus: row.account_status,

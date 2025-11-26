@@ -28,7 +28,14 @@ export function ArticleList({
 }: ArticleListProps) {
   const colorScheme =
     useThemeColor({}, 'background') === Colors.light.background ? 'light' : 'dark';
-  const colors = Colors[colorScheme];
+  // Extract color values as plain strings to avoid Proxy issues in React Native Web
+  const colorPalette = Colors[colorScheme];
+  const colors = {
+    primary: String(colorPalette.primary),
+    text: String(colorPalette.text),
+    textSecondary: String(colorPalette.textSecondary),
+    error: String(colorPalette.error),
+  };
 
   if (isLoading && articles.length === 0) {
     return (

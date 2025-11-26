@@ -1,5 +1,5 @@
 import { Outfit_400Regular, Outfit_500Medium, Outfit_600SemiBold, Outfit_700Bold, useFonts } from '@expo-google-fonts/outfit';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,7 +7,6 @@ import { ActivityIndicator, View } from 'react-native';
 import 'react-native-reanimated';
 
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/lib/auth/AuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -30,7 +29,6 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     'Outfit-Regular': Outfit_400Regular,
     'Outfit-Medium': Outfit_500Medium,
@@ -50,7 +48,7 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <ThemeProvider value={DefaultTheme}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(auth)" />
@@ -58,7 +56,7 @@ export default function RootLayout() {
               <Stack.Screen name="(patient)" />
               <Stack.Screen name="index" />
             </Stack>
-            <StatusBar style="auto" />
+            <StatusBar style="dark" />
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>

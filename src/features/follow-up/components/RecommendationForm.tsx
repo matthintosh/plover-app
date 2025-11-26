@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Colors, Spacing } from '@/constants/theme';
+import { type InterdentalSpace } from '../schema/fdi-dental-numbering';
 import type { OdontogramSpace } from '../service/types';
+import { OdontogramDisplay } from './OdontogramDisplay';
 
 export interface RecommendationFormProps {
   initialValues?: {
@@ -52,38 +61,79 @@ export const RecommendationForm: React.FC<RecommendationFormProps> = ({
     ),
   );
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [selectedSpaceForEdit, setSelectedSpaceForEdit] = useState<InterdentalSpace | null>(null);
+  const [showToolModal, setShowToolModal] = useState(false);
+  const [showBrushSizeModal, setShowBrushSizeModal] = useState(false);
+  const [tempBrushSize, setTempBrushSize] = useState('');
 
-  const handleSpaceToggle = (spaceId: string, toolType: 'interdental_brush' | 'floss') => {
-    const newSpaces = new Map(selectedSpaces);
-    const existing = newSpaces.get(spaceId);
-
-    if (existing && existing.toolType === toolType) {
-      // Remove if clicking the same tool type
-      newSpaces.delete(spaceId);
+  const handleSpaceClick = (space: InterdentalSpace) => {
+    const existing = selectedSpaces.get(space.spaceId);
+    
+    if (existing) {
+      // If space already has a recommendation, allow editing
+      if (existing.toolType === 'interdental_brush') {
+        setTempBrushSize(existing.brushSize || '');
+        setShowBrushSizeModal(true);
+      } else {
+        // For floss, show tool selection to change or remove
+        setSelectedSpaceForEdit(space);
+        setShowToolModal(true);
+      }
     } else {
-      // Add or update
-      newSpaces.set(spaceId, {
-        spaceId,
-        toolType,
-        brushSize: toolType === 'interdental_brush' ? '0.5mm' : undefined,
-      });
+      // New space - show tool selection
+      setSelectedSpaceForEdit(space);
+      setShowToolModal(true);
     }
+  };
 
+  const handleToolSelect = (toolType: 'interdental_brush' | 'floss') => {
+    if (!selectedSpaceForEdit) return;
+
+    const newSpaces = new Map(selectedSpaces);
+    
+    if (toolType === 'interdental_brush') {
+      // For brush, show brush size input
+      setTempBrushSize('0.5mm');
+      setShowToolModal(false);
+      setShowBrushSizeModal(true);
+    } else {
+      // For floss, add directly
+      newSpaces.set(selectedSpaceForEdit.spaceId, {
+        spaceId: selectedSpaceForEdit.spaceId,
+        toolType: 'floss',
+      });
+      setSelectedSpaces(newSpaces);
+      setShowToolModal(false);
+      setSelectedSpaceForEdit(null);
+      setFormErrors({});
+    }
+  };
+
+  const handleBrushSizeConfirm = () => {
+    if (!selectedSpaceForEdit) return;
+
+    const newSpaces = new Map(selectedSpaces);
+    newSpaces.set(selectedSpaceForEdit.spaceId, {
+      spaceId: selectedSpaceForEdit.spaceId,
+      toolType: 'interdental_brush',
+      brushSize: tempBrushSize.trim() || undefined,
+    });
     setSelectedSpaces(newSpaces);
+    setShowBrushSizeModal(false);
+    setSelectedSpaceForEdit(null);
+    setTempBrushSize('');
     setFormErrors({});
   };
 
-  const handleBrushSizeChange = (spaceId: string, brushSize: string) => {
-    const newSpaces = new Map(selectedSpaces);
-    const existing = newSpaces.get(spaceId);
+  const handleRemoveSpace = () => {
+    if (!selectedSpaceForEdit) return;
 
-    if (existing && existing.toolType === 'interdental_brush') {
-      newSpaces.set(spaceId, {
-        ...existing,
-        brushSize: brushSize || undefined,
-      });
-      setSelectedSpaces(newSpaces);
-    }
+    const newSpaces = new Map(selectedSpaces);
+    newSpaces.delete(selectedSpaceForEdit.spaceId);
+    setSelectedSpaces(newSpaces);
+    setShowToolModal(false);
+    setSelectedSpaceForEdit(null);
+    setFormErrors({});
   };
 
   const validate = () => {
@@ -134,113 +184,177 @@ export const RecommendationForm: React.FC<RecommendationFormProps> = ({
     });
   };
 
-  // Generate space IDs (1-2 through 31-32)
-  const spaceIds: string[] = [];
-  for (let i = 1; i <= 31; i++) {
-    spaceIds.push(`${i}-${i + 1}`);
-  }
+  // Create odontogram object for display
+  const currentOdontogram = {
+    id: 'temp',
+    spaces: Array.from(selectedSpaces.values()),
+  };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Toothbrush Information</Text>
+    <>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Toothbrush Information</Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Type</Text>
-          <TextInput
-            style={styles.input}
-            value={toothbrushType}
-            onChangeText={setToothbrushType}
-            placeholder="e.g., soft, medium, hard"
-            placeholderTextColor={Colors.light.textSecondary}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Type</Text>
+            <TextInput
+              style={styles.input}
+              value={toothbrushType}
+              onChangeText={setToothbrushType}
+              placeholder="e.g., soft, medium, hard"
+              placeholderTextColor={Colors.light.textSecondary}
+            />
+            {formErrors.toothbrushType && (
+              <Text style={styles.errorText}>{formErrors.toothbrushType}</Text>
+            )}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Brand</Text>
+            <TextInput
+              style={styles.input}
+              value={toothbrushBrand}
+              onChangeText={setToothbrushBrand}
+              placeholder="e.g., Brand Name"
+              placeholderTextColor={Colors.light.textSecondary}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Model</Text>
+            <TextInput
+              style={styles.input}
+              value={toothbrushModel}
+              onChangeText={setToothbrushModel}
+              placeholder="e.g., Model Name"
+              placeholderTextColor={Colors.light.textSecondary}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <OdontogramDisplay
+            odontogram={currentOdontogram}
+            editable={true}
+            onSpaceClick={handleSpaceClick}
           />
-          {formErrors.toothbrushType && (
-            <Text style={styles.errorText}>{formErrors.toothbrushType}</Text>
+
+          {formErrors.odontogram && (
+            <Text style={styles.errorText}>{formErrors.odontogram}</Text>
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Brand</Text>
-          <TextInput
-            style={styles.input}
-            value={toothbrushBrand}
-            onChangeText={setToothbrushBrand}
-            placeholder="e.g., Brand Name"
-            placeholderTextColor={Colors.light.textSecondary}
-          />
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
+        <Button
+          title={loading ? 'Saving...' : 'Save Recommendations'}
+          onPress={handleSubmit}
+          variant="primary"
+          fullWidth
+          disabled={loading}
+          style={styles.submitButton}
+        />
+      </ScrollView>
+
+      {/* Tool Selection Modal */}
+      <Modal
+        visible={showToolModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setShowToolModal(false);
+          setSelectedSpaceForEdit(null);
+        }}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: Colors.light.surface }]}>
+            <Text style={[styles.modalTitle, { color: Colors.light.text }]}>
+              Select Tool for Space {selectedSpaceForEdit?.spaceId}
+            </Text>
+            <Text style={[styles.modalSubtitle, { color: Colors.light.textSecondary }]}>
+              Between teeth {selectedSpaceForEdit?.tooth1} and {selectedSpaceForEdit?.tooth2}
+            </Text>
+            <View style={styles.modalButtons}>
+              <Button
+                title="Interdental Brush"
+                onPress={() => handleToolSelect('interdental_brush')}
+                variant="primary"
+                style={styles.modalButton}
+              />
+              <Button
+                title="Floss"
+                onPress={() => handleToolSelect('floss')}
+                variant="secondary"
+                style={styles.modalButton}
+              />
+              {selectedSpaces.has(selectedSpaceForEdit?.spaceId || '') && (
+                <Button
+                  title="Remove"
+                  onPress={handleRemoveSpace}
+                  variant="danger"
+                  style={styles.modalButton}
+                />
+              )}
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setShowToolModal(false);
+                  setSelectedSpaceForEdit(null);
+                }}
+                variant="outline"
+                style={styles.modalButton}
+              />
+            </View>
+          </View>
         </View>
+      </Modal>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Model</Text>
-          <TextInput
-            style={styles.input}
-            value={toothbrushModel}
-            onChangeText={setToothbrushModel}
-            placeholder="e.g., Model Name"
-            placeholderTextColor={Colors.light.textSecondary}
-          />
+      {/* Brush Size Input Modal */}
+      <Modal
+        visible={showBrushSizeModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setShowBrushSizeModal(false);
+          setSelectedSpaceForEdit(null);
+          setTempBrushSize('');
+        }}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: Colors.light.surface }]}>
+            <Text style={[styles.modalTitle, { color: Colors.light.text }]}>
+              Brush Size for Space {selectedSpaceForEdit?.spaceId}
+            </Text>
+            <TextInput
+              style={[styles.modalInput, { color: Colors.light.text, borderColor: Colors.light.border }]}
+              value={tempBrushSize}
+              onChangeText={setTempBrushSize}
+              placeholder="e.g., 0.5mm, 0.7mm, 1.0mm"
+              placeholderTextColor={Colors.light.textSecondary}
+              autoFocus
+            />
+            <View style={styles.modalButtons}>
+              <Button
+                title="Confirm"
+                onPress={handleBrushSizeConfirm}
+                variant="primary"
+                style={styles.modalButton}
+                disabled={!tempBrushSize.trim()}
+              />
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setShowBrushSizeModal(false);
+                  setSelectedSpaceForEdit(null);
+                  setTempBrushSize('');
+                }}
+                variant="outline"
+                style={styles.modalButton}
+              />
+            </View>
+          </View>
         </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Odontogram</Text>
-        <Text style={styles.sectionDescription}>
-          Select recommended tools for each interdental space
-        </Text>
-
-        <View style={styles.odontogramGrid}>
-          {spaceIds.map((spaceId) => {
-            const space = selectedSpaces.get(spaceId);
-            const isBrush = space?.toolType === 'interdental_brush';
-            const isFloss = space?.toolType === 'floss';
-
-            return (
-              <View key={spaceId} style={styles.spaceContainer}>
-                <Text style={styles.spaceLabel}>{spaceId}</Text>
-                <View style={styles.spaceButtons}>
-                  <Button
-                    title="Brush"
-                    onPress={() => handleSpaceToggle(spaceId, 'interdental_brush')}
-                    variant={isBrush ? 'primary' : 'secondary'}
-                    style={styles.spaceButton}
-                  />
-                  <Button
-                    title="Floss"
-                    onPress={() => handleSpaceToggle(spaceId, 'floss')}
-                    variant={isFloss ? 'primary' : 'secondary'}
-                    style={styles.spaceButton}
-                  />
-                </View>
-                {isBrush && (
-                  <TextInput
-                    style={styles.brushSizeInput}
-                    value={space?.brushSize || ''}
-                    onChangeText={(value) => handleBrushSizeChange(spaceId, value)}
-                    placeholder="Size (e.g., 0.5mm)"
-                    placeholderTextColor={Colors.light.textSecondary}
-                  />
-                )}
-              </View>
-            );
-          })}
-        </View>
-
-        {formErrors.odontogram && (
-          <Text style={styles.errorText}>{formErrors.odontogram}</Text>
-        )}
-      </View>
-
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      <Button
-        title={loading ? 'Saving...' : 'Save Recommendations'}
-        onPress={handleSubmit}
-        variant="primary"
-        fullWidth
-        disabled={loading}
-        style={styles.submitButton}
-      />
-    </ScrollView>
+      </Modal>
+    </>
   );
 };
 
@@ -249,7 +363,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: Spacing.lg,
     gap: Spacing.lg,
   },
   section: {
@@ -283,42 +396,44 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     backgroundColor: Colors.light.background,
   },
-  odontogramGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  spaceContainer: {
-    width: '30%',
-    padding: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.light.border,
-    borderRadius: Spacing.sm,
-    backgroundColor: Colors.light.surface,
-    gap: Spacing.xs,
-  },
-  spaceLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.light.text,
-    textAlign: 'center',
-  },
-  spaceButtons: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  spaceButton: {
+  modalOverlay: {
     flex: 1,
-    paddingVertical: Spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
   },
-  brushSizeInput: {
-    borderWidth: 1,
-    borderColor: Colors.light.border,
-    borderRadius: Spacing.xs,
-    padding: Spacing.xs,
-    fontSize: 12,
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: Spacing.md,
+    padding: Spacing.lg,
+    gap: Spacing.md,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
     color: Colors.light.text,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: Colors.light.textSecondary,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderRadius: Spacing.sm,
+    padding: Spacing.md,
+    fontSize: 16,
     backgroundColor: Colors.light.background,
+  },
+  modalButtons: {
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  modalButton: {
+    width: '100%',
   },
   submitButton: {
     marginTop: Spacing.md,

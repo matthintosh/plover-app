@@ -1,12 +1,12 @@
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
 
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useAuth } from '@/features/authentication/hooks/useAuth';
-import { useArticle } from '@/features/articles/hooks/useArticles';
 import { ArticleDetail } from '@/features/articles/components/ArticleDetail';
+import { useArticle } from '@/features/articles/hooks/useArticles';
+import { useAuth } from '@/features/authentication/hooks/useAuth';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function ArticleDetailScreen() {
   const colorScheme = useColorScheme() ?? 'light';

@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
 import { Spacing } from '@/constants/theme';
 import { PatientInvitationForm } from '@/features/authentication/components/PatientInvitationForm';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
@@ -18,6 +19,7 @@ export default function PeriodontistDashboard() {
   const [invitationLoading, setInvitationLoading] = useState(false);
   const [invitationError, setInvitationError] = useState<string | null>(null);
   const [invitationSuccess, setInvitationSuccess] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const {
     patients,
     isLoadingPatients,
@@ -64,6 +66,18 @@ export default function PeriodontistDashboard() {
     [router],
   );
 
+  const handleLogout = useCallback(async () => {
+    try {
+      setIsLoggingOut(true);
+      await auth.logout();
+      // Redirect to login page after logout
+      router.replace('/(auth)/login');
+    } catch (err: any) {
+      setIsLoggingOut(false);
+      alert(err.message || 'Failed to logout. Please try again.');
+    }
+  }, [auth, router]);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -106,6 +120,18 @@ export default function PeriodontistDashboard() {
           />
         )}
       </View>
+
+      <View style={styles.logoutSection}>
+        <Button
+          title="Logout"
+          onPress={handleLogout}
+          loading={isLoggingOut}
+          variant="outline"
+          fullWidth
+          accessibilityLabel="Logout"
+          accessibilityHint="Sign out of your account"
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -144,5 +170,9 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 14,
+  },
+  logoutSection: {
+    marginTop: Spacing.md,
+    marginBottom: Spacing.lg,
   },
 });

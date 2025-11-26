@@ -8,8 +8,8 @@ import { Colors, Spacing } from '@/constants/theme';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
 import type { PatientProfile } from '@/features/authentication/repository/patient.repository.interface';
 import { DiagnosisDisplay } from '@/features/follow-up/components/DiagnosisDisplay';
-import { RiskFactorsDisplay } from '@/features/follow-up/components/RiskFactorsDisplay';
 import { RecommendationForm } from '@/features/follow-up/components/RecommendationForm';
+import { RiskFactorsDisplay } from '@/features/follow-up/components/RiskFactorsDisplay';
 import { useFollowUp } from '@/features/follow-up/hooks/useFollowUp';
 import { useRecommendation } from '@/features/follow-up/hooks/useRecommendation';
 import type { Diagnosis } from '@/features/follow-up/service/types';
@@ -53,8 +53,6 @@ export default function PatientDetailScreen() {
 
   const {
     recommendation,
-    isLoading: recommendationLoading,
-    isFetching: recommendationFetching,
     error: recommendationError,
     createOrUpdateRecommendation,
     isSubmitting: recommendationSubmitting,
@@ -122,11 +120,11 @@ export default function PatientDetailScreen() {
     toothbrushBrand?: string;
     toothbrushModel?: string;
     odontogram?: {
-      spaces: Array<{
+      spaces: {
         spaceId: string;
         toolType: 'interdental_brush' | 'floss';
         brushSize?: string;
-      }>;
+      }[];
     };
   }) => {
     await createOrUpdateRecommendation(values, periodontist.id);

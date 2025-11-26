@@ -1,9 +1,8 @@
 import { LinearBackground } from '@/components/ui/LinearBackground';
 import { Colors, Spacing } from '@/constants/theme';
+import { type AuthMethod } from '@/features/authentication/components/AuthMethodSelector';
 import { LoginForm } from '@/features/authentication/components/LoginForm';
-import { PatientMagicLinkRequestForm } from '@/features/authentication/components/PatientMagicLinkRequestForm';
 import { PatientOTPRequestForm } from '@/features/authentication/components/PatientOTPRequestForm';
-import { AuthMethodSelector, type AuthMethod } from '@/features/authentication/components/AuthMethodSelector';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
 import { AuthService } from '@/features/authentication/service/auth.service';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -21,7 +20,6 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<LoginMode>('periodontist');
-  const [authMethod, setAuthMethod] = useState<AuthMethod>('magic-link');
   const [patientEmail, setPatientEmail] = useState<string>('');
   const [magicLinkSuccess, setMagicLinkSuccess] = useState(false);
   const textSecondaryColor = useThemeColor({}, 'textSecondary');
@@ -59,27 +57,7 @@ export default function LoginScreen() {
     [authService, auth, router],
   );
 
-  const handlePatientMagicLinkRequest = useCallback(
-    async (email: string) => {
-      setLoading(true);
-      setError(null);
-      setMagicLinkSuccess(false);
-
-      try {
-        const result = await authService.requestPatientMagicLink({ email });
-        setMagicLinkSuccess(true);
-        setError(null);
-      } catch (err) {
-        const normalized = normalizeError(err);
-        setError(normalized.message);
-        setMagicLinkSuccess(false);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [authService],
-  );
-
+ 
   if (auth.isAuthenticated) {
     if (auth.userType === 'periodontist') {
       return <Redirect href={'/(periodontist)/dashboard' as any} />;
@@ -131,7 +109,6 @@ export default function LoginScreen() {
               setMode('patient');
               setError(null);
               setMagicLinkSuccess(false);
-              setAuthMethod('magic-link');
             }}>
             <Text
               style={[
@@ -148,27 +125,7 @@ export default function LoginScreen() {
           <LoginForm onSubmit={handlePeriodontistSubmit} loading={loading} error={error} />
         ) : (
           <>
-            <AuthMethodSelector
-              selectedMethod={authMethod}
-              onMethodChange={(method) => {
-                setAuthMethod(method);
-                setError(null);
-                setMagicLinkSuccess(false);
-                // Email is preserved in patientEmail state
-              }}
-            />
-            {authMethod === 'magic-link' ? (
-              <PatientMagicLinkRequestForm
-                onSubmit={(email) => {
-                  setPatientEmail(email);
-                  handlePatientMagicLinkRequest(email);
-                }}
-                loading={loading}
-                error={error}
-                success={magicLinkSuccess}
-                initialEmail={patientEmail}
-              />
-            ) : (
+          
               <PatientOTPRequestForm
                 onSubmit={async (email) => {
                   setPatientEmail(email);
@@ -193,7 +150,7 @@ export default function LoginScreen() {
                 success={false}
                 initialEmail={patientEmail}
               />
-            )}
+            
           </>
         )}
 
@@ -245,7 +202,7 @@ const styles = StyleSheet.create({
   modeButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#897EFF',
   },
   modeButtonTextActive: {
     color: '#FFFFFF',

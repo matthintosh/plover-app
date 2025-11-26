@@ -1,11 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { ProfileService } from '../service/profile.service';
 import type {
-  ProfileUpdateInput,
   NotificationSettings,
   PrivacySettings,
+  ProfileUpdateInput,
   SupportContactInput,
 } from '../service/types';
 
@@ -100,6 +100,8 @@ export const useProfile = ({
     isContactingSupport: contactSupportMutation.isPending,
   };
 };
+
+
 
 
 

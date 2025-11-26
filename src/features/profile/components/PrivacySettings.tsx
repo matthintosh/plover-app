@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -96,7 +96,7 @@ export function PrivacySettingsComponent({
         <Switch
           value={settings.analytics}
           onValueChange={() => handleToggle('analytics')}
-          trackColor={{ false: Colors.light.border, true: Colors.light.primary }}
+          trackColor={{ false: Colors.light.border, true: Colors.light.primary}}
         />
       </View>
 
@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
 });
+
+
 
 
 

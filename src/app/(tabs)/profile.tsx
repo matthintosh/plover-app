@@ -1,7 +1,8 @@
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
 import { LinearBackground } from '@/components/ui/LinearBackground';
 import { Colors, Spacing } from '@/constants/theme';
 import { useAuth } from '@/features/authentication/hooks/useAuth';
@@ -20,7 +21,9 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 export default function ProfileScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
+  const router = useRouter();
   const { patient, isAuthenticated, userType, isLoading: authLoading, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const {
     updateProfile,
@@ -115,6 +118,18 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      // Redirect to login page after logout
+      router.replace('/(auth)/login');
+    } catch (err: any) {
+      setIsLoggingOut(false);
+      alert(err.message || 'Failed to logout. Please try again.');
+    }
+  };
+
   if (authLoading) {
     return (
       <View style={[styles.container, { backgroundColor: palette.background }]}>
@@ -172,6 +187,18 @@ export default function ProfileScreen() {
         error={supportError}
       />
 
+      <View style={styles.logoutSection}>
+        <Button
+          title="Logout"
+          onPress={handleLogout}
+          loading={isLoggingOut}
+          variant="outline"
+          fullWidth
+          accessibilityLabel="Logout"
+          accessibilityHint="Sign out of your account"
+        />
+      </View>
+
       <AccountDeletion onDelete={handleDeleteAccount} loading={isDeleting} />
     </ScrollView>
     </LinearBackground>
@@ -202,6 +229,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginTop: Spacing.xl,
+  },
+  logoutSection: {
+    marginTop: Spacing.md,
+    marginBottom: Spacing.lg,
   },
 });
 

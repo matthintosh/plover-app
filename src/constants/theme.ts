@@ -16,7 +16,7 @@ export const Colors = {
   light: {
     // Semantic colors
     primary: primaryLight,
-    secondary: '#7FB3A8', // Soft green
+    secondary: '#4B4362', 
     accent: '#F5A623', // Warm accent
     
     // Status colors

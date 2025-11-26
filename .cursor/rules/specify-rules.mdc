@@ -23,6 +23,7 @@ npm test && npm run lint
 TypeScript 5.9.2 (strict mode enabled): Follow standard conventions
 
 ## Recent Changes
+- 001-patient-diagnostic-view: Added TypeScript 5.9.2 (strict mode enabled)
 - 001-patient-otp-login: Added TypeScript 5.9.2 (strict mode enabled)
 
 - 001-plover-app: Added TypeScript 5.9.2 (strict mode enabled)

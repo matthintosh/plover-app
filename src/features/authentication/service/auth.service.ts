@@ -211,21 +211,7 @@ export class AuthService {
 
   async requestPatientOTP(input: RequestPatientOTPInput): Promise<RequestPatientOTPResult> {
     const { email } = input;
-
-    // First, verify that the email belongs to a patient
-    const patient = await this.patientRepository.findByEmail(email.toLowerCase());
-
-    if (!patient) {
-      // Don't reveal if email exists or not for security
-      // Return success message anyway to prevent email enumeration
-      return {
-        success: true,
-        message: 'If this email is registered as a patient, you will receive an OTP code shortly.',
-      };
-    }
-
-    // Send OTP code using Supabase Auth signInWithOtp
-    // This will send an email with a 6-digit OTP code
+   
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase(),
       options: {

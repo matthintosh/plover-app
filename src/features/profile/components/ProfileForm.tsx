@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -65,17 +65,17 @@ export function ProfileForm({
         <Text style={styles.helperText}>Email cannot be changed</Text>
       </View>
 
-      <View style={styles.inputGroup}>
+      {/*<View style={styles.inputGroup}>
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
-          style={styles.input}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          placeholder="Enter your phone number"
-          keyboardType="phone-pad"
-          placeholderTextColor={Colors.light.textSecondary}
-        />
-      </View>
+            style={styles.input}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="Enter your phone number"
+            keyboardType="phone-pad"
+            placeholderTextColor={Colors.light.textSecondary}
+          />
+        </View>*/}
 
       {error && <Text style={styles.errorText}>{error}</Text>}
 
@@ -133,6 +133,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
 });
+
+
 
 
 

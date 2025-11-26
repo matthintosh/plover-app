@@ -56,6 +56,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="medical-info"
+        options={{
+          title: 'Medical Info',
+          tabBarIcon: ({ color }) => <FontAwesome5 name="file-medical" size={20} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
